@@ -104,3 +104,121 @@ db.listingsAndReviews.find({
     beds: 1,
     'address.country':1
 }).pretty()
+
+// Find all listings that allowed pets
+db.listingsAndReviews.find({
+    'amenities': 'Pets allowed'
+}, {
+    'name': 1,
+    'amenities': 1
+}).pretty();
+
+// Find all listings that have pets allowed
+// and pets lived on this property
+db.listingsAndReviews.find({
+    'amenities': {
+        '$all': ['Pets allowed', 'Pets live on this property', 'Dog(s)', 'Cat(s)']
+    }
+}, {
+    'name': 1,
+    'amenities': 1
+}).pretty();
+
+// Count how many listings that have Dog(s) and Cat(s)
+db.listingsAndReviews.find({
+    'amenities': {
+        '$all': ['Pets allowed', 'Pets live on this property', 'Dog(s)', 'Cat(s)']
+    }
+}, {
+    'name': 1,
+    'amenities': 1
+}).count();
+
+// find all listings that have
+// either dogs or cats listed in
+// the list of amenities
+db.listingsAndReviews.find({
+    'amenities': {
+        '$in': ['Dog(s)', 'Cat(s)']
+    }
+}, {
+    'name': 1,
+    'amenities': 1
+}).pretty()
+
+// select a document by ID
+db.listingsAndReviews.find({
+    '_id': '10006546'
+}).pretty()
+
+// select a document by Object ID
+use sample_mflix
+db.movies.find({
+    "_id": ObjectId('573a1390f29313caabcd4135')
+})
+
+
+
+// how to find by a substring
+// e.g. look for all the listings that have the word "spacious" in the name
+// word spacious in name. options i is to make everything small case
+use sample_airnb
+db.listingsAndReviews.find({
+    'name': {
+        '$regex':'spacious',
+        '$options':'i'
+    }
+},{
+    'name':1
+})
+
+// compound criteria
+// AND/OR
+db.listingsAndReviews.find({
+    'name': {
+        '$regex':'spacious',
+        '$options':'i'
+    },
+    'address.country':'Brazil'
+},{
+    'name':1,
+    'address.country': 1
+})
+
+// OR
+// Or has to use an array. cause you need the whole thing to evaluate to "true"
+db.listingsAndReviews.find({
+    '$or': [
+        {
+            'address.country':'Brazil'
+        },
+        {
+            'address.country':'Canada'
+        }
+    ]
+},{
+    'name':1,
+    'address.country':1
+}).pretty()
+
+// OR and AND
+// we find listings in Brazil 
+// 
+// listings in Canada that has more than 3 beds
+db.listingsAndReviews.find({
+    '$or':[
+        {
+            'address.country':'Brazil'
+        },
+        {
+            'address.country':'Canada',
+            'beds': {
+                '$gt':3
+            }
+        }
+    ]
+},{
+    'name':1,
+    'address.country':1,
+    'beds':1
+}).pretty();
